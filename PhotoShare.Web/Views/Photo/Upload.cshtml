@@ -13,14 +13,12 @@
 <br />
 <br />
 @Html.ActionLink("Cancel", "Upload")  |  @Html.ActionLink("Go back home", "../Home/Index")
+
 @section scripts{
-    <script>
-        @Scripts.Render("~/Scripts/dropzone")
-    </script>
-    @Styles.Render("~/Scripts/dropzonecss")
-    @*@Scripts.Render("~/Scripts/Upload.js")*@
+  @Scripts.Render("~/Scripts/dropzone")
+  @Scripts.Render("~/Scripts/UploadImg")
+}
 
-
-    @Scripts.Render("~/Scripts/UploadImg")
-
+@section style{
+@Styles.Render("~/Scripts/dropzonecss")
 }

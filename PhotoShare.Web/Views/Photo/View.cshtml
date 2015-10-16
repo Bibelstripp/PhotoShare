@@ -98,7 +98,7 @@
             var id = $('#Id').val();
             $.ajax({
                 method: 'DELETE',
-                url: '/api/Photo/' + id
+                url: '/api/Photo/' + id   //det er her vi binder hvilket bilde som skal slettes
             }).then(
                 function () {
                     window.location.href = "/";

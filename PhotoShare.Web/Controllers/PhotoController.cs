@@ -12,20 +12,20 @@ using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using Microsoft.AspNet.Identity;
 using PagedList;
+using PhotoShare.Web.Repository;
 
 namespace PhotoShare.Web.Controllers
 {
     public class PhotoController : Controller
     {
+    private PhotoRepository photoRepository = new PhotoRepository(new PhotoContext());
+
         [HttpGet]
         [Route("Images/{id:guid}")]
         public FileResult Index(Guid id, int? thumb)
         {
 
-            var file = photoContext.Photos
-                .Where(p => p.Id == id)
-                .Select(p => p.File)
-                .Single();
+            var file = photoRepository.GetFile(id);
 
             byte[] content;
             if (thumb.HasValue)
@@ -46,17 +46,24 @@ namespace PhotoShare.Web.Controllers
         // GET: Photo
         public ActionResult View(Guid id)
         {
-            var photo = photoContext.Photos
-                .Include(p => p.File)
-                .SingleOrDefault(p => p.Id == id);
-
+            var photo = photoRepository.GetPhoto(id);
+            
             if (photo == null)
             {
                 return HttpNotFound();
             }
             else
             {
-                return View(photo);
+                var viewModel = new PhotoDetailsViewModel
+                {
+                    Id = photo.Id,
+                    Comment = photo.Comment,
+                    Username = photo.User.Username,
+                    Timestamp = photo.Timestamp,
+                    Score = photo.GetScore(),
+                    Rating = photo.GetRating(User.Identity.GetUserId()),
+                };
+                return View(viewModel);
             }
         }
 
@@ -112,38 +119,6 @@ namespace PhotoShare.Web.Controllers
             }
 
             return destImage;
-        }
-
-        //public ActionResult MyPhotostream(string currentFilter, int? page)
-        //{
-        //    //ViewBag.CurrentSort = sortOrder;
-
-        //    var user = User.Identity.GetUserName();
-
-        //    var photos = photoContext.Photos
-        //        .Where(u => u.UserId == user)
-        //        .OrderByDescending(p => p.Timestamp)
-        //        //.Take(9)
-        //        .ToArray();
-
-        //    int pageSize = 3;
-        //    int pageNumber = (page ?? 1);
-            
-        //    return View(photos.ToPagedList(pageNumber, pageSize));
-        //}
-
-        public ActionResult MyPhotostream()
-        {
-
-            var user = User.Identity.GetUserName();
-
-            var photos = photoContext.Photos
-                .Where(u => u.UserId == user)
-                .OrderByDescending(p => p.Timestamp)
-                //.Take(9)
-                .ToArray();
-
-            return View(photos);
         }
     }
 }

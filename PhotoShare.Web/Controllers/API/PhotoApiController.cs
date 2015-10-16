@@ -8,12 +8,23 @@ using System.Web;
 using System.Web.Http;
 using PhotoShare.Web.Models;
 using System.Data.Entity;
+using PhotoShare.Web.Repository;
+using Microsoft.AspNet.Identity;
 
 namespace PhotoShare.Web.Controllers.API
 {
     public class PhotoApiController : ApiController
     {
-        private PhotoContext photoContext = new PhotoContext();
+        private PhotoContext photoContext;
+        private UserRepository userRepository;
+        private PhotoRepository photoRepository;
+
+        public PhotoApiController()
+        {
+            photoContext = new PhotoContext();
+            userRepository = new UserRepository(photoContext);
+            photoRepository = new PhotoRepository(photoContext);
+        }
 
         [Route("api/photo/upload")]
         [HttpPost]
@@ -23,11 +34,13 @@ namespace PhotoShare.Web.Controllers.API
             var comment = request.Form["comment"];
             HttpPostedFile file = request.Files[0];
 
+            var user = userRepository.GetUser(User.Identity.GetUserId());
+
             var filename = GetUniqueFilename(file.FileName);
             var photo = new Photo
             {
                 Id = Guid.NewGuid(),
-                UserId = User.Identity.Name,
+                User = user,
                 Comment = comment,
                 File = new UploadedFile
                 {
@@ -44,8 +57,6 @@ namespace PhotoShare.Web.Controllers.API
             var id = photo.Id;
 
             return Request.CreateResponse(HttpStatusCode.OK, id);
-
-            //return Request.CreateResponse(HttpStatusCode.Redirect, "/photo/" + id);
         }
 
         private string GetUniqueFilename(string filename)
@@ -77,23 +88,31 @@ namespace PhotoShare.Web.Controllers.API
             return memoryStream.ToArray();
         }
 
-        [Route("api/photo/{id}")]
+        [Route("api/photo/{id:guid}")]
         [HttpDelete]
         public IHttpActionResult Delete(Guid id)
         {
-            var photo = photoContext.Photos
-                .Include(p => p.File)
-                .SingleOrDefault(p => p.Id == id);
+            var photo = photoRepository.GetPhoto(id);
+
             if (photo == null)
             {
                 return NotFound();
             }
 
-            photoContext.Files.Remove(photo.File);
             photoContext.Photos.Remove(photo);
             photoContext.SaveChanges();
 
             return Ok();
+        }
+
+        [HttpPut]
+        [Route("api/photo/{id:guid}/rate/{rating:int}")]
+        public IHttpActionResult PutRate(Guid id, int rating)
+        {
+            ///TODO: Rate photo, return new score.
+            var newScore = 1.1;
+
+            return Ok(new RateResult(newScore));
         }
     }
 }
