@@ -26,6 +26,16 @@ namespace PhotoShare.Web
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new ScriptBundle("~/Scripts/dropzone").Include(
+                      "~/Scripts/dropzone/dropzone*"));
+
+            bundles.Add(new StyleBundle("~/Scripts/dropzonecss").Include(
+                      "~/Scripts/dropzone/dropzone.css"));
+
+            bundles.Add(new ScriptBundle("~/Scripts/UploadImg").Include(
+                      "~/Scripts/Upload.js"));
+
         }
     }
 }

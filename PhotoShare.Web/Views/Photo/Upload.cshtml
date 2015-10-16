@@ -1,0 +1,26 @@
+﻿@{
+    ViewBag.Title = "Add";
+}
+
+<h2>Upload photo</h2>
+<br />
+<br />
+<form id="upload-form" method="post" action="/api/photo/upload" class="dropzone" enctype="multipart/form-data">
+    <input style="margin-top:-52px; position:fixed; margin-left:-20px" type="text" name="comment" placeholder="Comment" required />
+    <input style="margin-top:200px; position: absolute; margin-left:-20px" type="submit" />
+</form>
+<br />
+<br />
+<br />
+@Html.ActionLink("Cancel", "Upload")  |  @Html.ActionLink("Go back home", "../Home/Index")
+@section scripts{
+    <script>
+        @Scripts.Render("~/Scripts/dropzone")
+    </script>
+    @Styles.Render("~/Scripts/dropzonecss")
+    @*@Scripts.Render("~/Scripts/Upload.js")*@
+
+
+    @Scripts.Render("~/Scripts/UploadImg")
+
+}

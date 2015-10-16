@@ -1,0 +1,113 @@
+﻿@model PhotoShare.Web.Models.PhotoDetailsViewModel
+
+@{
+    ViewBag.Title = Model.Comment;
+    const int MaxRating = 5;
+    var username = "@" + Model.Username;
+}
+
+@Html.HiddenFor(model => model.Id)
+<h2>@Html.RouteLink(username, "UserStream", new { username = Model.Username }, null)</h2>
+<div>
+    <h4>@Model.Comment<span class="timestamp pull-right">@Html.DisplayFor(model => model.Timestamp, "LastModified")</span></h4>
+    <hr />
+    <div class="container">
+        <div class="row">
+            <div id="image" class="col-sm-8">
+                <img class="img-responsive" src='~/Images/@Model.Id' />
+            </div>
+            <div id="details" class="col-sm-4">
+                <div class="row">
+                    <div class="col-xs-8">
+                        <div>
+                            Score: <span class="score">@Model.Score.ToString("0.0")</span>
+                        </div>
+                        <span class="rating">
+                            @for (int i = 1; i < MaxRating + 1; i++)
+                            {
+                                if (i <= Model.Rating)
+                                {<span data-rating="@i" class="star glyphicon glyphicon-star"></span>}
+                                else
+                                {<span data-rating="@i" class="star glyphicon glyphicon-star-empty"></span>}
+                            }
+                            <span class="info pull-right">Click to rate!</span>
+                        </span>
+                    </div>
+                    <div class="col-xs-4">
+                        <button class="btn btn-danger delete-button pull-right">
+                            <span class="glyphicon glyphicon-trash" title="Delete" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-xs-12">
+                        <span class="username">@Html.RouteLink(username, "UserStream", new { username = Model.Username }, null):</span>
+                        <span class="comment">@Html.DisplayFor(model => model.Comment)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+<script>
+    $(function () {  //hvis man wrapper hele funksjonen inn i denne vil ikke denne funksjonen begynne å kjøre før noe annet er lastet på siden. Denne vil nå kjøre etter at alt annet er rendret
+        function updateScore(score) {
+            $("#details span.score").html(score.toFixed(1));
+        }
+        function updateRating($element) {
+            //Set filled stars up to user rating
+            $element
+                .prevAll('.star')
+                .addBack()
+                .removeClass('glyphicon-star glyphicon-star-empty')
+                .addClass('glyphicon-star');
+
+            //Set empty stars above user rating
+            $element
+                .nextAll('.star')
+                .removeClass('glyphicon-star glyphicon-star-empty')
+                .addClass('glyphicon-star-empty');
+
+        }
+
+        $('.rating > span[data-rating]').on('click', function (element, b, c) {
+            var $element = $(element.target);
+            var data = $element.data();
+
+
+            var id = $('#Id').val();
+            $.ajax({
+                method: 'PUT',
+                url: '/api/Photo/' + id + '/rate/' + data.rating
+            }).then(
+                function (data) {
+                    console.log(data.NewScore);
+                    updateRating($element);
+                    updateScore(data.NewScore);
+                },
+                function (error) {
+                    console.error(error)
+                }
+            )
+        })
+        $('.delete-button').on('click', function () {
+            var id = $('#Id').val();
+            $.ajax({
+                method: 'DELETE',
+                url: '/api/Photo/' + id
+            }).then(
+                function () {
+                    window.location.href = "/";
+                },
+                function (error) {
+                    console.error(error)
+                }
+            )
+        })
+    });
+</script>
+}
