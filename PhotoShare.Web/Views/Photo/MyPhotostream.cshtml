@@ -12,9 +12,9 @@
 <h2>@ViewBag.Title</h2>
 
 <br />
-    @foreach (Photo photo in Model)
-    {
-        <a href="~/Photo/View/@photo.Id">
-            <img src="~/Images/@photo.Id?thumb=150" alt="@photo.Comment" title="@photo.Comment" />
-        </a>
-    }
+@foreach (Photo photo in Model)
+{
+    <a href="~/Photo/View/@photo.Id">
+        <img src="~/Images/@photo.Id?thumb=150" alt="@photo.Comment" title="@photo.Comment" />
+    </a>
+}

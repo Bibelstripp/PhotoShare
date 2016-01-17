@@ -13,5 +13,7 @@ namespace PhotoShare.Web.Models
         public int Rating { get; set; }
         public DateTime Timestamp { get; set; }
         public string Comment { get; set; }
+
+        public bool IsOwner { get; set; }
     }
 }

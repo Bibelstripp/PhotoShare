@@ -6,8 +6,6 @@
         autoProcessQueue: false,
         uploadMultiple: true,
         maxFiles: 1,
-        addRemoveLinks: false,
-
 
         // The setting up of the dropzone
         init: function () {
@@ -20,14 +18,14 @@
                 myDropzone.processQueue();
             });
 
-            //if you drop more files it will remove the first and add the last one
-            this.on("maxfilesexceeded", function (file) {
+                //if you drop more files it will remove the first and add the last one
+                this.on("maxfilesexceeded", function (file) {
                 this.removeAllFiles();
                 this.addFile(file);
             });
 
-            myDropzone.on("success", function (file, response) {
-                window.location = "/Photo/View/" + response;
+                myDropzone.on("success", function (file, response) {
+                    window.location = "/Photo/View/" + response;
             });
         }
     }

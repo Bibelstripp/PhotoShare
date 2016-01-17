@@ -19,7 +19,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("Application name", "Indx", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -29,7 +29,7 @@
                     @if (Request.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Upload", "Upload", "Photo")</li>
-                        <li>@Html.ActionLink("My Photos", "MyPhotostream", "Photo")</li>
+                        <li>@Html.ActionLink("My Photos", "MyPhotoStream", "Photo")</li>
                     }
                 </ul>
                 @Html.Partial("_LoginPartial")
@@ -43,9 +43,10 @@
             <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
         </footer>
     </div>
-    @RenderSection("scripts", required: false)
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")   
+ @Scripts.Render("~/bundles/jquery")
+ @Scripts.Render("~/bundles/bootstrap")
+
+ @RenderSection("scripts", required: false)
     
 </body>
 </html>

@@ -9,7 +9,8 @@ namespace PhotoShare.Web.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(PhotoShare.Web.Models.PhotoContext context)

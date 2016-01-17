@@ -13,10 +13,10 @@ namespace PhotoShare.Web.Controllers
 
         public ActionResult Index()
         {
-            var photos = photoContext.Photos;
-                //.OrderByDescending(p => p.Timestamp)
-                //.Take(9)
-                //.ToArray();
+            var photos = photoContext.Photos
+                .OrderByDescending(p => p.Timestamp)
+                .Take(9)
+                .ToArray();
 
             return View(photos);
         }

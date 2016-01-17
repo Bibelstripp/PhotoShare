@@ -8,15 +8,16 @@ using System.Web;
 using System.Web.Http;
 using PhotoShare.Web.Models;
 using System.Data.Entity;
-using PhotoShare.Web.Repository;
+using PhotoShare.Web.Repositories;
 using Microsoft.AspNet.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace PhotoShare.Web.Controllers.API
-{
+{    
     public class PhotoApiController : ApiController
     {
         private PhotoContext photoContext;
-        private UserRepository userRepository;
+        private UserRepository  userRepository;
         private PhotoRepository photoRepository;
 
         public PhotoApiController()
@@ -94,12 +95,11 @@ namespace PhotoShare.Web.Controllers.API
         {
             var photo = photoRepository.GetPhoto(id);
 
-            if (photo == null)
-            {
+            if (photo == null){
                 return NotFound();
             }
 
-            photoContext.Photos.Remove(photo);
+            photoContext.Photos.Remove(photo); 
             photoContext.SaveChanges();
 
             return Ok();
@@ -114,5 +114,37 @@ namespace PhotoShare.Web.Controllers.API
 
             return Ok(new RateResult(newScore));
         }
+
+        public class UpdateCommentRequest
+        {
+            [Required]
+            public string Comment { get; set; }
+        }
+
+        [HttpPut]
+        [Route("api/photo/{id:guid}/comment")]
+        [Authorize]
+        public IHttpActionResult Comment(Guid id, [FromBody]UpdateCommentRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var photo = photoRepository.GetPhoto(id);
+            if (photo == null)
+            {
+                return NotFound();
+            }
+            else if (photo.User.Id != User.Identity.GetUserId())
+            {
+                return BadRequest();
+            }
+
+            photo.Comment = request.Comment;
+            photoRepository.Save(photo);
+
+            return Ok();
+        }
+
     }
 }

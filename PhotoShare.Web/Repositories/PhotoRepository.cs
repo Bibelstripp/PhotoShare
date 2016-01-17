@@ -5,7 +5,7 @@ using System.Web;
 using PhotoShare.Web.Models;
 using System.Data.Entity;
 
-namespace PhotoShare.Web.Repository
+namespace PhotoShare.Web.Repositories
 {
     public class PhotoRepository
     {

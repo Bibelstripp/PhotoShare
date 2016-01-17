@@ -17,8 +17,8 @@
         @foreach (Photo photo in Model)
         {
             <div class="grid-image">
-                <a href="~/Photo/View/@photo.Id">
-                    <img src="~/Images/@photo.Id?thumb=150" alt="@photo.Comment" title="@photo.Comment" />
+                <a href="~/Photo/View/@photo.Id" data-title="@photo.Comment">
+                    <img src="~/Images/@photo.Id?thumb=200" alt="@photo.Comment" title="@photo.Comment" />
                 </a>
             </div>
         }

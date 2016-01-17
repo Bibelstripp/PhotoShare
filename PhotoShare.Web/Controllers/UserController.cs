@@ -6,7 +6,7 @@ using PhotoShare.Web.Models;
 using System.Data.Entity;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
-using PhotoShare.Web.Repository;
+using PhotoShare.Web.Repositories;
 
 namespace PhotoShare.Web.Controllers
 {

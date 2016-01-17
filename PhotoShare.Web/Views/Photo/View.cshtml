@@ -9,7 +9,14 @@
 @Html.HiddenFor(model => model.Id)
 <h2>@Html.RouteLink(username, "UserStream", new { username = Model.Username }, null)</h2>
 <div>
-    <h4>@Model.Comment<span class="timestamp pull-right">@Html.DisplayFor(model => model.Timestamp, "LastModified")</span></h4>
+    <h4>
+        <span class="comment" contenteditable="false">@Model.Comment</span>
+        @if (Model.IsOwner)
+        {
+            <span class="edit-comment glyphicon glyphicon glyphicon-pencil" aria-hidden="true"></span>
+        }
+        <span class="timestamp pull-right">@Html.DisplayFor(model => model.Timestamp, "LastModified")</span>
+    </h4>
     <hr />
     <div class="container">
         <div class="row">
@@ -71,10 +78,43 @@
                 .nextAll('.star')
                 .removeClass('glyphicon-star glyphicon-star-empty')
                 .addClass('glyphicon-star-empty');
-
         }
+        function saveComment(event) {
+            if (event.keyCode == 13) {
+                var $comment = $(event.target);
+                var $element = $comment.siblings(".edit-comment");
+                var comment = $comment.text();
 
-        $('.rating > span[data-rating]').on('click', function (element, b, c) {
+                var id = $('#Id').val();
+                $.ajax({
+                    method: 'PUT',
+                    url: '/api/Photo/' + id + '/comment',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ comment: comment })
+                }).then(
+                    function (data) {
+                        console.log('Comment saved!');
+                    },
+                    function (error) {
+                        console.error(error)
+                    }
+                )
+
+                $comment.off('keypress', saveComment);
+                $comment.attr('contenteditable', false);
+                $element.show();
+            }
+        }
+        $(".edit-comment").on('click', function (event) {
+            var $element = $(event.target);
+            var $comment = $element.siblings(".comment");
+            $element.hide();
+            $comment.attr('contenteditable', true);
+            $comment.on('keypress', saveComment);
+            $comment.focus();
+            $comment.selectText();
+        });
+        $('.rating > span[data-rating]').on('click', function (element) {
             var $element = $(element.target);
             var data = $element.data();
 
@@ -108,6 +148,21 @@
                 }
             )
         })
+        jQuery.fn.selectText = function () {
+            var doc = document;
+            var element = this[0];
+            if (doc.body.createTextRange) {
+                var range = document.body.createTextRange();
+                range.moveToElementText(element);
+                range.select();
+            } else if (window.getSelection) {
+                var selection = window.getSelection();
+                var range = document.createRange();
+                range.selectNodeContents(element);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        };
     });
 </script>
 }

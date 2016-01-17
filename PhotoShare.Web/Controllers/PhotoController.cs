@@ -12,7 +12,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using Microsoft.AspNet.Identity;
 using PagedList;
-using PhotoShare.Web.Repository;
+using PhotoShare.Web.Repositories;
 
 namespace PhotoShare.Web.Controllers
 {
@@ -53,15 +53,17 @@ namespace PhotoShare.Web.Controllers
                 return HttpNotFound();
             }
             else
-            {
+            {            
+                var userId = User.Identity.GetUserId();
                 var viewModel = new PhotoDetailsViewModel
                 {
                     Id = photo.Id,
                     Comment = photo.Comment,
                     Username = photo.User.Username,
+                    IsOwner = photo.User.Id == userId,
                     Timestamp = photo.Timestamp,
                     Score = photo.GetScore(),
-                    Rating = photo.GetRating(User.Identity.GetUserId()),
+                    Rating = photo.GetRating(userId),
                 };
                 return View(viewModel);
             }
@@ -72,6 +74,7 @@ namespace PhotoShare.Web.Controllers
             return View();
         }
 
+
         public static byte[] ResizeImage(byte[] bytes, int size)
         {
             var image = Image.FromStream(new MemoryStream(bytes));
@@ -79,15 +82,15 @@ namespace PhotoShare.Web.Controllers
             int width;
             if (image.Width > image.Height)
             {
-                var ratio = (double)image.Height / (double) image.Width;
+                var ratio = (double)image.Height / (double)image.Width;
                 height = size;
-                width = (int) ((double)size / ratio);
+                width = (int)((double)size / ratio);
             }
             else
             {
-                var ratio = (double)image.Width / (double) image.Height;
+                var ratio = (double)image.Width / (double)image.Height;
                 width = size;
-                height = (int) ((double)size / ratio);
+                height = (int)((double)size / ratio);
             }
 
             var bitmap = ResizeImage(image, width, height);
@@ -96,6 +99,7 @@ namespace PhotoShare.Web.Controllers
 
             return stream.ToArray();
         }
+
         public static Bitmap ResizeImage(Image image, int width, int height)
         {
             var destRect = new Rectangle(0, 0, width, height);
@@ -119,6 +123,26 @@ namespace PhotoShare.Web.Controllers
             }
 
             return destImage;
+        }
+
+        public bool IsOwner { get; set; }
+
+        public ActionResult MyPhotoStream(string currentFilter, int? page)
+        {
+            //ViewBag.CurrentSort = sortOrder;
+
+            var user = User.Identity.GetUserId();
+
+            var photos = photoContext.Photos
+                .Where(u => u.User.Id == user)
+                .OrderByDescending(p => p.Timestamp)
+                //.Take(9)
+                .ToArray();
+
+            int pageSize = 3;
+            int pageNumber = (page ?? 1);
+
+            return View(photos.ToPagedList(pageNumber, pageSize));
         }
     }
 }
