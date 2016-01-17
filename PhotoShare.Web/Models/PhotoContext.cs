@@ -14,6 +14,7 @@ namespace PhotoShare.Web.Models
         public DbSet<Photo> Photos { get; set; }
         public DbSet<UploadedFile> Files { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<UserRating> UserRating { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

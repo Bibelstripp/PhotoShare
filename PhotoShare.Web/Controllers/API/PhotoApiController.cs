@@ -27,6 +27,22 @@ namespace PhotoShare.Web.Controllers.API
             photoRepository = new PhotoRepository(photoContext);
         }
 
+        public PhotoDetailsViewModel[] Get()
+        {
+            var userId = User.Identity.GetUserId();
+            return photoContext.Photos.ToList() //hvis man bruker denne her må alle filtreringer (where) komme etter denne ToList()
+                .Select(photo => new PhotoDetailsViewModel
+                {
+                    Id=photo.Id,
+                    Comment=photo.Comment,
+                    Username=photo.User.Username,
+                    IsOwner=photo.User.Id == userId,
+                    Timestamp=photo.Timestamp,
+                    Score=photo.GetScore(),
+                    Rating=photo.GetRating(userId),
+                }).ToArray();
+        }
+
         [Route("api/photo/upload")]
         [HttpPost]
         public HttpResponseMessage Upload()
